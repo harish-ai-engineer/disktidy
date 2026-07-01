@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "disktidy"
-version = "0.2.2"
+version = "0.2.3"
 description = "Analyze disk usage and safely reclaim space from Docker and package-manager caches."
 readme = "README.md"
 requires-python = ">=3.8"
