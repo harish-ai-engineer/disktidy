@@ -42,6 +42,9 @@ class Style:
     def dim(self, t: str) -> str:
         return self._wrap("2", t)
 
+    def italic(self, t: str) -> str:
+        return self._wrap("3", t)
+
     def red(self, t: str) -> str:
         return self._wrap("31", t)
 
@@ -51,12 +54,27 @@ class Style:
     def yellow(self, t: str) -> str:
         return self._wrap("33", t)
 
+    def blue(self, t: str) -> str:
+        return self._wrap("34", t)
+
+    def magenta(self, t: str) -> str:
+        return self._wrap("35", t)
+
     def cyan(self, t: str) -> str:
         return self._wrap("36", t)
 
+    def gray(self, t: str) -> str:
+        return self._wrap("90", t)
+
+    def bright_cyan(self, t: str) -> str:
+        return self._wrap("96", t)
+
 
 def make_style(no_color: bool) -> Style:
-    enabled = (not no_color) and sys.stdout.isatty() and os.environ.get("NO_COLOR") is None
+    force = os.environ.get("FORCE_COLOR") not in (None, "", "0")
+    enabled = (not no_color) and os.environ.get("NO_COLOR") is None and (
+        force or sys.stdout.isatty()
+    )
     if enabled and os.name == "nt":
         # Enable ANSI on legacy Windows consoles.
         try:
