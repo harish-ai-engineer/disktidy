@@ -69,6 +69,21 @@ class Style:
     def bright_cyan(self, t: str) -> str:
         return self._wrap("96", t)
 
+    def bright_magenta(self, t: str) -> str:
+        return self._wrap("95", t)
+
+    def bright_blue(self, t: str) -> str:
+        return self._wrap("94", t)
+
+    def bright_green(self, t: str) -> str:
+        return self._wrap("92", t)
+
+    def bright_yellow(self, t: str) -> str:
+        return self._wrap("93", t)
+
+    def bright_red(self, t: str) -> str:
+        return self._wrap("91", t)
+
 
 def make_style(no_color: bool) -> Style:
     force = os.environ.get("FORCE_COLOR") not in (None, "", "0")

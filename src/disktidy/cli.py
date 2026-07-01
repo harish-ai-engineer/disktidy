@@ -48,20 +48,20 @@ def cmd_report(args, style) -> int:
     def drive_style(ri, ci, padded, raw):
         d = drives[ri]
         if ci == 4:  # Free%
-            fn = style.red if d.pct_free < 10 else style.yellow if d.pct_free < 20 else style.green
+            fn = style.bright_red if d.pct_free < 10 else style.bright_yellow if d.pct_free < 20 else style.bright_green
             return fn(padded)
         if ci == 5:  # usage bar — color by how full the drive is
             frac = (d.used / d.total) if d.total else 0
-            fn = style.red if frac >= 0.9 else style.yellow if frac >= 0.8 else style.green
+            fn = style.bright_red if frac >= 0.9 else style.bright_yellow if frac >= 0.8 else style.bright_cyan
             return fn(padded)
-        return padded
+        return style.dim(padded)
 
     print(render.table(
         ["Drive", "Used", "Free", "Total", "Free%", "Usage"],
         drow, style, aligns=["l", "r", "r", "r", "r", "l"], cell_style=drive_style))
     for d in drives:
         if d.pct_free < 10:
-            print(style.red(f"  ! {d.name} is critically full — {human_size(d.free)} free"))
+            print(style.bright_red(f"  ⚠ {d.name} is critically full — {human_size(d.free)} free"))
 
     print(render.heading(style, "Biggest known space consumers"))
     if not consumers:
@@ -77,18 +77,18 @@ def cmd_report(args, style) -> int:
         if ci == 2:
             return render.safety_badge(style, c.safety, padded)
         if ci == 1:
-            return style.bold(padded)
-        return style.gray(padded)
+            return style.bold(style.bright_cyan(padded))
+        return style.dim(padded)
 
     print(render.table(["Size", "What", "Safety", "Description"], rows, style,
                        aligns=["r", "l", "l", "l"], cell_style=cons_style))
 
     safe_total = sum(c.size for c in consumers if c.safety == "safe")
     print(render.kv_line(style, "safe to reclaim now:",
-                         style.green(style.bold(human_size(safe_total)))))
-    print(style.gray("\n  reclaim commands:"))
+                         style.bright_green(style.bold(human_size(safe_total)))))
+    print(style.dim("\n  reclaim commands:"))
     for c in consumers:
-        print(f"    {style.cyan('›')} {style.bold(c.name)}: {style.gray(c.reclaim)}")
+        print(f"    {style.bright_magenta('›')} {style.bold(style.bright_cyan(c.name))}: {style.dim(c.reclaim)}")
     return 0
 
 
@@ -115,7 +115,7 @@ def cmd_analyze(args, style) -> int:
         def folder_style(ri, ci, padded, raw):
             if ci == 0:
                 return render.size_color(style, result.folders[ri].size, padded)
-            return style.gray(padded)
+            return style.bright_cyan(padded)
 
         print(render.table(["Size", "Folder"], rows, style,
                            aligns=["r", "l"], cell_style=folder_style))
@@ -130,7 +130,7 @@ def cmd_analyze(args, style) -> int:
             def file_style(ri, ci, padded, raw):
                 if ci == 0:
                     return render.size_color(style, result.files[ri].size, padded)
-                return style.gray(padded)
+                return style.bright_cyan(padded)
 
             print(render.table(["Size", "File"], rows, style,
                                aligns=["r", "l"], cell_style=file_style))
@@ -160,10 +160,10 @@ def cmd_docker(args, style) -> int:
         return 0
 
     print(render.banner(style))
-    mode = style.green(style.bold(" APPLY ")) if args.apply else style.cyan(style.bold(" DRY-RUN "))
+    mode = style.bright_green(style.bold(" APPLY ")) if args.apply else style.bright_blue(style.bold(" DRY-RUN "))
     print(render.heading(style, "Docker reclaim") + f"  {mode}")
-    print(style.gray("  only build cache, dangling images and stopped containers are touched"))
-    print(style.gray("  volumes and tagged images are never removed"))
+    print(style.dim("  only build cache, dangling images and stopped containers are touched"))
+    print(style.dim("  volumes and tagged images are never removed"))
 
     if not args.apply:
         print()
@@ -171,19 +171,19 @@ def cmd_docker(args, style) -> int:
 
     print()
     for step in docker_mod.safe_prune(apply=args.apply):
-        mark = style.green("✓") if step.ok else style.red("✗")
-        print(f"  {mark} {style.bold(step.label)}: {style.gray(step.detail)}")
+        mark = style.bright_green("✓") if step.ok else style.bright_red("✗")
+        print(f"  {mark} {style.bold(style.bright_cyan(step.label))}: {style.dim(step.detail)}")
 
     if args.compact:
         print(render.heading(style, "Compact virtual disk"))
         for step in docker_mod.compact_vhdx(apply=args.apply):
-            mark = style.green("✓") if step.ok else style.red("✗")
-            print(f"  {mark} {style.bold(step.label)}: {style.gray(step.detail)}")
+            mark = style.bright_green("✓") if step.ok else style.bright_red("✗")
+            print(f"  {mark} {style.bold(style.bright_cyan(step.label))}: {style.dim(step.detail)}")
 
     if not args.apply:
-        print(style.gray("\n  re-run with ") + style.cyan("--apply") +
-              style.gray(" to execute (add ") + style.cyan("--compact") +
-              style.gray(" to shrink the vhdx)"))
+        print(style.dim("\n  re-run with ") + style.bright_magenta("--apply") +
+              style.dim(" to execute (add ") + style.bright_magenta("--compact") +
+              style.dim(" to shrink the vhdx)"))
     return 0
 
 
@@ -210,9 +210,9 @@ def cmd_caches(args, style) -> int:
 
     total = sum(e.size for e in entries)
     print(render.banner(style))
-    mode = style.green(style.bold(" APPLY ")) if args.apply else style.cyan(style.bold(" DRY-RUN "))
+    mode = style.bright_green(style.bold(" APPLY ")) if args.apply else style.bright_blue(style.bold(" DRY-RUN "))
     print(render.heading(style, "Package caches") +
-          f"  {mode}  {style.gray('total')} {style.bold(human_size(total))}")
+          f"  {mode}  {style.dim('total')} {style.bold(style.bright_yellow(human_size(total)))}")
 
     rows = [[human_size(e.size), e.name, e.path] for e in entries]
 
@@ -220,22 +220,22 @@ def cmd_caches(args, style) -> int:
         if ci == 0:
             return render.size_color(style, entries[ri].size, padded)
         if ci == 1:
-            return style.bold(style.cyan(padded))
-        return style.gray(padded)
+            return style.bold(style.bright_magenta(padded))
+        return style.bright_blue(padded)
 
     print(render.table(["Size", "Tool", "Path"], rows, style,
                        aligns=["r", "l", "l"], cell_style=cache_style))
 
     if not args.apply:
-        print(style.gray("\n  re-run with ") + style.cyan("--apply") +
-              style.gray(" to clean (safe — caches rebuild on demand)"))
+        print(style.dim("\n  re-run with ") + style.bright_magenta("--apply") +
+              style.dim(" to clean (safe — caches rebuild on demand)"))
         return 0
 
     print()
     for e in entries:
         ok, detail = caches_mod.clean(e)
-        mark = style.green("✓") if ok else style.red("✗")
-        print(f"  {mark} {style.bold(e.name)}: {style.gray(detail)}")
+        mark = style.bright_green("✓") if ok else style.bright_red("✗")
+        print(f"  {mark} {style.bold(style.bright_cyan(e.name))}: {style.dim(detail)}")
     return 0
 
 
