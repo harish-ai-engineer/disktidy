@@ -1,8 +1,14 @@
 # disktidy
 
+[![PyPI version](https://img.shields.io/pypi/v/disktidy.svg)](https://pypi.org/project/disktidy/)
+[![Python versions](https://img.shields.io/pypi/pyversions/disktidy.svg)](https://pypi.org/project/disktidy/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A conservative, cross-platform command-line tool that **analyzes where your
 disk space went** and helps you **safely reclaim it** — from Docker, package
 manager caches, and other well-known space hogs.
+
+> **Latest release: v0.2.3** — `pip install --upgrade disktidy`
 
 It follows one rule, borrowed from good cleanup tools everywhere:
 **looking is free and safe; anything destructive requires an explicit flag.**
@@ -80,6 +86,17 @@ python -m pip install -e .
 python -m pytest
 python -m disktidy report
 ```
+
+## Changelog
+
+### 0.2.3
+- Colorful terminal dashboard: boxed tables, per-drive usage bars, color-coded
+  sizes, and safety badges (`FORCE_COLOR` supported; honors `NO_COLOR`).
+- Simplified the GitHub Actions release workflow (PyPI trusted publishing).
+
+### 0.1.0
+- Initial release: `report`, `analyze`, `docker`, and `caches` commands;
+  dry-run by default; zero dependencies.
 
 ## License
 
