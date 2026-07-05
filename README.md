@@ -1,4 +1,4 @@
-# disktidy
+# diskteddy
 
 [![PyPI version](https://img.shields.io/pypi/v/disktidy.svg)](https://pypi.org/project/disktidy/)
 [![Python versions](https://img.shields.io/pypi/pyversions/disktidy.svg)](https://pypi.org/project/disktidy/)
